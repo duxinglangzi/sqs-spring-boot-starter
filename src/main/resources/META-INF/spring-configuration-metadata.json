@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "sourceType": "com.duxinglangzi.sqs.starter.config.SqsConfig",
+      "name": "duxinglangzi.queue.sqs.instances",
+      "type": "java.util.Map<java.lang.String,com.duxinglangzi.sqs.starter.config.SqsConfig.EndpointInstance>",
+      "description": "aws sqs config "
+    }
+  ]
+}
