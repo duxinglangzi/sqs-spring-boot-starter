@@ -48,7 +48,6 @@ public abstract class AbstractMessageListenerContainer implements SmartLifecycle
     protected void sleep(long sleepTimeMilliSeconds) {
         try {
             Thread.sleep(sleepTimeMilliSeconds);
-            if (!isRunning()) Thread.currentThread().interrupt();
         } catch (InterruptedException e) {
         }
     }

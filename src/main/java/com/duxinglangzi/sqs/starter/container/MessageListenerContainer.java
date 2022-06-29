@@ -22,6 +22,7 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
     private MessageDeletionPolicy deletionPolicy;
     private List<QueueAttributeName> attributeNames;
     private List<String> messageAttributeNames;
+    private Integer maxNumberOfMessages = 10;
 
     public MessageListenerContainer(
             String queueUrl, List<QueueAttributeName> attributeNames, List<String> messageAttributeNames,
@@ -38,7 +39,7 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
     public void doStart() {
         try {
             ReceiveMessageRequest.Builder requestBuilder = ReceiveMessageRequest.builder().queueUrl(queueUrl);
-            requestBuilder.maxNumberOfMessages(10);
+            requestBuilder.maxNumberOfMessages(maxNumberOfMessages);
             if (attributeNames != null) requestBuilder.attributeNames(attributeNames);
             if (messageAttributeNames != null) requestBuilder.messageAttributeNames(messageAttributeNames);
             ReceiveMessageResponse receiveMessageResponse = sqsClient.receiveMessage(requestBuilder.build());
@@ -65,6 +66,7 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
                 }
             } else {
                 sleep(SLEEP_TIME_MILLI_SECONDS);
+                if (!isRunning()) Thread.currentThread().interrupt();
             }
         } catch (Exception exc) {
             // 防止删除消息时发生错误,或者拉取消息失败等情况
