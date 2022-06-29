@@ -80,7 +80,7 @@ public class SqsListenerTest {
      * @return void
      * @author wuqiong 2022-06-28 17:28
      */
-    @SqsListener(queueUrl = "https://sqs.us-west-1.amazonaws.com/1234567890/qiong-queue.fifo")
+    @SqsListener(queueUrl = "https://sqs.us-west-1.amazonaws.com/1234567890/qiong-queue.fifo", deletionPolicy = MessageDeletionPolicy.ALWAYS)
     public void threeMessage(Message message) {
         System.out.println("[threeMessage] --->>> currentTimeMillis ： " +
                 System.currentTimeMillis() + "Fifo message body " + message.body());
