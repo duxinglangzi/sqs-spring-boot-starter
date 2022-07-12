@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * 监控程序是否可使用
+ *
  * @author wuqiong 2022/6/25
  */
 public class ApplicationReadyListener implements ApplicationListener<ApplicationReadyEvent> {

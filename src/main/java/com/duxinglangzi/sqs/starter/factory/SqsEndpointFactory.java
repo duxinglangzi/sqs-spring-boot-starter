@@ -21,8 +21,10 @@ public class SqsEndpointFactory {
 
     /**
      * get sqs client endpoint
+     * <p>
+     * 获取一个sqs连接端点
      *
-     * @param clientName
+     * @param clientName 连接名称
      * @return SqsClient
      * @author wuqiong 2022/6/25 14:27
      */
@@ -33,8 +35,10 @@ public class SqsEndpointFactory {
 
     /**
      * create batch sqs client
+     * <p>
+     * 批量创建sqs 连接
      *
-     * @param sqsConfig
+     * @param sqsConfig sqs的配置
      * @author wuqiong 2022/6/25 14:13
      */
     public static void createBatchByConfig(SqsConfig sqsConfig) {
@@ -45,12 +49,16 @@ public class SqsEndpointFactory {
             endpointMap.put(first.get(), sqsClient);
             endpointMap.put(defaultStr, sqsClient);
         }
-        sqsConfig.getInstances().forEach((k, v) -> endpointMap.put(k,createSqsClient(k, v)));
+        sqsConfig.getInstances().forEach((k, v) -> endpointMap.put(k, createSqsClient(k, v)));
     }
 
     /**
      * create sqs client by config endpointInstance
+     * <p>
+     * 根据端点实例创建 sqs 连接
      *
+     * @param clientName       连接名称
+     * @param endpointInstance 端点实例信息，包含 KeyId、secretKey 、 region 信息
      * @return SqsClient
      * @author wuqiong 2022/6/25 13:22
      */
