@@ -1,7 +1,6 @@
 package com.duxinglangzi.sqs.starter;
 
 import com.duxinglangzi.sqs.starter.factory.SqsEndpointFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -12,8 +11,19 @@ import java.util.Map;
  *
  * @author wuqiong 2022/6/25
  */
-@Component
 public class CustomSqsClient {
+
+    /**
+     * 发送标准消息队列的消息
+     *
+     * @param queueUrl    队列url地址
+     * @param messageBody 消息内容
+     * @return SendMessageResponse
+     * @author wuqiong 2022/8/5 13:58
+     */
+    public SendMessageResponse sentStandardMessage(String queueUrl, String messageBody) {
+        return sentStandardMessage(null, queueUrl, messageBody, null, null);
+    }
 
     /**
      * 发送标准消息队列的消息
@@ -28,6 +38,20 @@ public class CustomSqsClient {
      */
     public SendMessageResponse sentStandardMessage(String clientName, String queueUrl, String messageBody, Integer delaySeconds, Map<String, MessageAttributeValue> messageAttributes) {
         return SqsEndpointFactory.getSqsClient(clientName).sendMessage(createBuilder(queueUrl, messageBody, delaySeconds, messageAttributes).build());
+    }
+
+    /**
+     * 发送 FIFO 队列的消息
+     *
+     * @param queueUrl               队列url地址
+     * @param messageBody            消息内容
+     * @param messageGroupId         消息组ID, FIFO队列此值必需存在
+     * @param messageDeduplicationId 消息重复ID, FIFO队列此值必需存在
+     * @return SendMessageResponse
+     * @author wuqiong 2022/8/5 14:00
+     */
+    public SendMessageResponse sentFifoMessage(String queueUrl, String messageBody, String messageGroupId, String messageDeduplicationId) {
+        return sentFifoMessage(null, queueUrl, messageBody, messageGroupId, messageDeduplicationId, null, null);
     }
 
     /**
@@ -112,6 +136,21 @@ public class CustomSqsClient {
                 .entries(entries)
                 .build();
         return SqsEndpointFactory.getSqsClient(clientName).deleteMessageBatch(buildDeleteBatchRequest);
+    }
+
+    /**
+     * 根据名称查询 queue url
+     *
+     * @param queueName  队列名称
+     * @param clientName 连接名称 , 为空则使用 defaults
+     * @return String
+     * @author wuqiong 2022/8/5 14:01
+     */
+    public String queryQueueUrl(String clientName, String queueName) {
+        Assert.hasText(queueName, "参数 queueName 值不能为空,请检查");
+        return SqsEndpointFactory.getSqsClient(clientName)
+                .getQueueUrl(GetQueueUrlRequest.builder().queueName(queueName).build())
+                .queueUrl();
     }
 
     private SendMessageRequest.Builder createBuilder(String queueUrl, String messageBody, Integer delaySeconds, Map<String, MessageAttributeValue> messageAttributes) {

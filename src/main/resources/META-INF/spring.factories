@@ -1,11 +1,11 @@
 
 # Auto Configure
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.duxinglangzi.sqs.starter.config.SqsConfig,\
-com.duxinglangzi.sqs.starter.config.SqsListenerConfigurationSelector
+# org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+# com.duxinglangzi.sqs.starter.config.SqsConfig,\
+# com.duxinglangzi.sqs.starter.config.SqsListenerConfigurationSelector
 
 
 # Application Listeners
-org.springframework.context.ApplicationListener=\
-com.duxinglangzi.sqs.starter.listener.ApplicationReadyListener
+# org.springframework.context.ApplicationListener=\
+# com.duxinglangzi.sqs.starter.listener.ApplicationReadyListener
 

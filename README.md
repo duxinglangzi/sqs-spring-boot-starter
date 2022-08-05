@@ -25,10 +25,12 @@ wuqiong:
 
 ```
 
-### 在spring boot 项目中的代码使用实例 
+### 在spring boot 项目中的代码使用实例 (需在 使用EnableSqsListener 注解开启 sqs listener)
+
 ```java
 
 
+import com.duxinglangzi.sqs.starter.annotation.EnableSqsListener;
 import com.duxinglangzi.sqs.starter.annotation.SqsListener;
 import com.duxinglangzi.sqs.starter.container.QueueMessageAcknowledgment;
 import com.duxinglangzi.sqs.starter.enums.MessageDeletionPolicy;
@@ -39,9 +41,12 @@ import org.springframework.stereotype.Service;
 
 
 @Service
+@EnableSqsListener
 public class SqsListenerTest {
 
-
+    /**
+     * 必须添加 @EnableSqsListener 注解,才能能用
+     */
     @Autowired
     private CustomSqsClient customSqsClient;
 
