@@ -1,6 +1,8 @@
 package com.duxinglangzi.sqs.starter.container;
 
 import com.duxinglangzi.sqs.starter.enums.MessageDeletionPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -14,6 +16,7 @@ import java.util.List;
  * @author wuqiong 2022/6/25
  */
 public class MessageListenerContainer extends AbstractMessageListenerContainer {
+    private static final Logger logger = LoggerFactory.getLogger(MessageListenerContainer.class);
 
     private String queueUrl;
     private Method method;
@@ -69,6 +72,8 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
                 if (!isRunning()) Thread.currentThread().interrupt();
             }
         } catch (Exception exc) {
+            logger.error("[MessageListenerContainer_doStart] 拉取消息发生异常 ,Pull message exception. queueUrl:{} ,methodName:{} ,errorMessage:{}",
+                    queueUrl, method.getName(), exc.getLocalizedMessage());
             // 防止删除消息时发生错误,或者拉取消息失败等情况
             exc.printStackTrace();
         }
