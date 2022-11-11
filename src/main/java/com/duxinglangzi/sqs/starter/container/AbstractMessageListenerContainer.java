@@ -13,6 +13,7 @@ public abstract class AbstractMessageListenerContainer implements SmartLifecycle
     protected Long SLEEP_TIME_MILLI_SECONDS = 1000L;
 
     protected abstract void doStart();
+    protected abstract void doInit();
 
     @Override
     public void start() {
@@ -20,6 +21,7 @@ public abstract class AbstractMessageListenerContainer implements SmartLifecycle
         new Thread(() -> {
             // 待spring 应用程序准备就绪后,再开始拉取消息
             while (!ApplicationReadyListener.START_LISTENER_CONTAINER.get()) sleep(5L * SLEEP_TIME_MILLI_SECONDS);
+            doInit();// 初始化部分参数
             while (isRunning() && !Thread.currentThread().isInterrupted()) doStart();
         }).start();
     }

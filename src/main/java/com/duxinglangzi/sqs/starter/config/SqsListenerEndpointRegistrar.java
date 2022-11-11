@@ -7,6 +7,7 @@ import com.duxinglangzi.sqs.starter.enums.MessageDeletionPolicy;
 import com.duxinglangzi.sqs.starter.factory.SqsEndpointFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.core.task.AsyncTaskExecutor;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
@@ -30,7 +31,7 @@ public class SqsListenerEndpointRegistrar {
     private Environment environment;
     private Map.Entry<Method, SqsListener> listenerEntry;
 
-    public void registerListenerContainer(ConfigurableListableBeanFactory beanFactory, SqsConfig sqsConfig) {
+    public void registerListenerContainer(ConfigurableListableBeanFactory beanFactory, SqsConfig sqsConfig, AsyncTaskExecutor asyncTaskExecutor) {
         if (beanFactory.containsBean(getRegisterID())) return; // 如果已经存在则不在创建
         SqsClient sqsClient = SqsEndpointFactory.getSqsClient(getListenerEntry().getValue().clientName());
         if (sqsClient == null) {
@@ -59,7 +60,8 @@ public class SqsListenerEndpointRegistrar {
                 getListenerEntry().getValue().deletionPolicy(),
                 getListenerEntry().getKey(),
                 getBean(),
-                sqsClient
+                sqsClient,
+                asyncTaskExecutor
         ));
     }
 

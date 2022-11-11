@@ -21,7 +21,7 @@ public class CustomSqsClient {
      * @return SendMessageResponse
      * @author wuqiong 2022/8/5 13:58
      */
-    public SendMessageResponse sentStandardMessage(String queueUrl, String messageBody) {
+    public static SendMessageResponse sentStandardMessage(String queueUrl, String messageBody) {
         return sentStandardMessage(null, queueUrl, messageBody, null, null);
     }
 
@@ -36,7 +36,7 @@ public class CustomSqsClient {
      * @return SendMessageResponse
      * @author wuqiong 2022/6/25 15:44
      */
-    public SendMessageResponse sentStandardMessage(String clientName, String queueUrl, String messageBody, Integer delaySeconds, Map<String, MessageAttributeValue> messageAttributes) {
+    public static SendMessageResponse sentStandardMessage(String clientName, String queueUrl, String messageBody, Integer delaySeconds, Map<String, MessageAttributeValue> messageAttributes) {
         return SqsEndpointFactory.getSqsClient(clientName).sendMessage(createBuilder(queueUrl, messageBody, delaySeconds, messageAttributes).build());
     }
 
@@ -50,7 +50,7 @@ public class CustomSqsClient {
      * @return SendMessageResponse
      * @author wuqiong 2022/8/5 14:00
      */
-    public SendMessageResponse sentFifoMessage(String queueUrl, String messageBody, String messageGroupId, String messageDeduplicationId) {
+    public static SendMessageResponse sentFifoMessage(String queueUrl, String messageBody, String messageGroupId, String messageDeduplicationId) {
         return sentFifoMessage(null, queueUrl, messageBody, messageGroupId, messageDeduplicationId, null, null);
     }
 
@@ -67,7 +67,7 @@ public class CustomSqsClient {
      * @return SendMessageResponse
      * @author wuqiong 2022/6/25 15:49
      */
-    public SendMessageResponse sentFifoMessage(String clientName, String queueUrl, String messageBody, String messageGroupId, String messageDeduplicationId, Integer delaySeconds, Map<String, MessageAttributeValue> messageAttributes) {
+    public static SendMessageResponse sentFifoMessage(String clientName, String queueUrl, String messageBody, String messageGroupId, String messageDeduplicationId, Integer delaySeconds, Map<String, MessageAttributeValue> messageAttributes) {
         SendMessageRequest.Builder builder = createBuilder(queueUrl, messageBody, delaySeconds, messageAttributes);
         Assert.hasText(messageGroupId, "参数 messageGroupId 值不能为空,请检查");
         Assert.hasText(messageDeduplicationId, "参数 messageDeduplicationId 值不能为空,请检查");
@@ -87,7 +87,7 @@ public class CustomSqsClient {
      * @return ReceiveMessageResponse
      * @author wuqiong 2022/6/25 15:13
      */
-    public ReceiveMessageResponse receiveMessage(String clientName, String queueUrl, Integer maxNumberOfMessages, QueueAttributeName... attributeNames) {
+    public static ReceiveMessageResponse receiveMessage(String clientName, String queueUrl, Integer maxNumberOfMessages, QueueAttributeName... attributeNames) {
         Assert.hasText(queueUrl, "参数 queueUrl 值不能为空,请检查");
         ReceiveMessageRequest.Builder requestBuilder = ReceiveMessageRequest.builder().queueUrl(queueUrl);
         if (maxNumberOfMessages != null && maxNumberOfMessages > 1 && maxNumberOfMessages < 10) {
@@ -108,7 +108,7 @@ public class CustomSqsClient {
      * @return boolean
      * @author wuqiong 2022/6/25 15:25
      */
-    public boolean deleteMessage(String clientName, String queueUrl, String receiptHandle) {
+    public static boolean deleteMessage(String clientName, String queueUrl, String receiptHandle) {
         Assert.hasText(queueUrl, "参数 queueUrl 值不能为空,请检查");
         Assert.hasText(receiptHandle, "参数 receiptHandle 值不能为空,请检查");
         DeleteMessageRequest buildDeleteRequest = DeleteMessageRequest.builder()
@@ -128,7 +128,7 @@ public class CustomSqsClient {
      * @return DeleteMessageBatchResponses
      * @author wuqiong 2022/6/25 15:29
      */
-    public DeleteMessageBatchResponse deleteBatchMessage(String clientName, String queueUrl, DeleteMessageBatchRequestEntry... entries) {
+    public static DeleteMessageBatchResponse deleteBatchMessage(String clientName, String queueUrl, DeleteMessageBatchRequestEntry... entries) {
         Assert.hasText(queueUrl, "参数 queueUrl 值不能为空,请检查");
         Assert.isTrue(entries == null || entries.length == 0, "参数 entries 数组值不能为空,请检查");
         DeleteMessageBatchRequest buildDeleteBatchRequest = DeleteMessageBatchRequest.builder()
@@ -146,14 +146,14 @@ public class CustomSqsClient {
      * @return String
      * @author wuqiong 2022/8/5 14:01
      */
-    public String queryQueueUrl(String clientName, String queueName) {
+    public static String queryQueueUrl(String clientName, String queueName) {
         Assert.hasText(queueName, "参数 queueName 值不能为空,请检查");
         return SqsEndpointFactory.getSqsClient(clientName)
                 .getQueueUrl(GetQueueUrlRequest.builder().queueName(queueName).build())
                 .queueUrl();
     }
 
-    private SendMessageRequest.Builder createBuilder(String queueUrl, String messageBody, Integer delaySeconds, Map<String, MessageAttributeValue> messageAttributes) {
+    private static SendMessageRequest.Builder createBuilder(String queueUrl, String messageBody, Integer delaySeconds, Map<String, MessageAttributeValue> messageAttributes) {
         Assert.hasText(queueUrl, "参数 queueUrl 值不能为空,请检查");
         Assert.hasText(messageBody, "参数 messageBody 值不能为空,请检查");
         SendMessageRequest.Builder builder = SendMessageRequest.builder().queueUrl(queueUrl).messageBody(messageBody);

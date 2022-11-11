@@ -44,11 +44,21 @@ import org.springframework.stereotype.Service;
 @EnableSqsListener
 public class SqsListenerTest {
 
+
     /**
-     * 必须添加 @EnableSqsListener 注解,才能能用
+     * 示例0:  通过配置队列名称进行消息拉取
+     *
+     * @param message
+     * @param acknowledgment
+     * @return void
+     * @author wuqiong 2022-06-28 17:28
      */
-    @Autowired
-    private CustomSqsClient customSqsClient;
+    @SqsListener(queueUrl = "qiong-queue.fifo", deletionPolicy = MessageDeletionPolicy.NEVER)
+    public void oneMessage(Message message, QueueMessageAcknowledgment acknowledgment) {
+        System.out.println("[oneMessage] --->>> currentTimeMillis ： " +
+                System.currentTimeMillis() + "Fifo message body " + message.body());
+        boolean acknowledge = acknowledgment.acknowledge(); // 手动删除消息
+    }
 
     /**
      * 示例1:  通过动态参数进行配置 listener, 且删除策略为: NEVER(手动确认并删除)
@@ -99,7 +109,7 @@ public class SqsListenerTest {
      */
     public void fourMessage() {
         // second 对应着配置文件第二个
-        customSqsClient.sentFifoMessage(
+        CustomSqsClient.sentFifoMessage(
                 "second",
                 "https://sqs.us-west-1.amazonaws.com/1234567890/qiong-queue.fifo",
                 "这是测试消息啊",
@@ -117,7 +127,7 @@ public class SqsListenerTest {
      */
     public void fiveMessage() {
         // client name 不写, 默认使用配置文件里面的第一个
-        SendMessageResponse sendMessageResponse = customSqsClient.sentStandardMessage(
+        SendMessageResponse sendMessageResponse = CustomSqsClient.sentStandardMessage(
                 null,
                 "https://sqs.us-west-1.amazonaws.com/1234567890/qiong-standard-queue",
                 "这是测试消息啊",

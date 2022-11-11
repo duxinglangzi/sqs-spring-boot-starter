@@ -1,6 +1,7 @@
 package com.duxinglangzi.sqs.starter.config;
 
 import com.duxinglangzi.sqs.starter.annotation.SqsListener;
+import com.duxinglangzi.sqs.starter.common.Constants;
 import com.duxinglangzi.sqs.starter.factory.SqsEndpointFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -21,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +41,7 @@ public class SqsListenerAnnotationBeanPostProcessor implements
     private AtomicInteger ATOMIC_INTEGER = new AtomicInteger();
     private final String CONTAINER_ID_PREFIX = "com.duxinglangzi.sqs.starter.config.SqsListenerEndpointRegistrar#";
     private ConfigurableListableBeanFactory configurableListableBeanFactory;
+    private AsyncTaskExecutor asyncTaskExecutor;
     private SqsConfig sqsConfig;
     private ApplicationContext applicationContext;
 
@@ -72,7 +77,10 @@ public class SqsListenerAnnotationBeanPostProcessor implements
     public void afterSingletonsInstantiated() {
         sqsConfig = configurableListableBeanFactory.getBean(SqsConfig.class);
         SqsEndpointFactory.createBatchByConfig(sqsConfig);
-        this.registrars.forEach(e -> e.registerListenerContainer(configurableListableBeanFactory, sqsConfig));
+        Map<String, Long> registrarsMap = this.registrars.stream().map(each -> each.getListenerEntry().getValue().clientName())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        asyncTaskExecutor = createDefaultTaskExecutor(registrarsMap);
+        this.registrars.forEach(e -> e.registerListenerContainer(configurableListableBeanFactory, sqsConfig, asyncTaskExecutor));
     }
 
     @Override
@@ -83,5 +91,18 @@ public class SqsListenerAnnotationBeanPostProcessor implements
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    // 不注册到spring 是怕有人在使用过程中，使用了这个线程池,导致积压消息
+    protected AsyncTaskExecutor createDefaultTaskExecutor(Map<String, Long> registrarsMap) {
+        int corePoolSize = registrarsMap.values().stream().collect(Collectors.summingInt(l -> l.intValue()));
+        int maxPoolSize = corePoolSize * Constants.DEFAULT_BATCH_MESSAGE;
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setThreadNamePrefix("AsyncTaskExecutor_SQS_Listener - ");
+        threadPoolTaskExecutor.setCorePoolSize(corePoolSize);
+        threadPoolTaskExecutor.setMaxPoolSize(maxPoolSize);
+        threadPoolTaskExecutor.setQueueCapacity(corePoolSize);
+        threadPoolTaskExecutor.afterPropertiesSet();
+        return threadPoolTaskExecutor;
     }
 }

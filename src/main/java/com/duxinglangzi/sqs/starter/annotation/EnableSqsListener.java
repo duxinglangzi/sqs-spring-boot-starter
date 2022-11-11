@@ -1,6 +1,5 @@
 package com.duxinglangzi.sqs.starter.annotation;
 
-import com.duxinglangzi.sqs.starter.CustomSqsClient;
 import com.duxinglangzi.sqs.starter.config.SqsConfig;
 import com.duxinglangzi.sqs.starter.config.SqsListenerConfigurationSelector;
 import com.duxinglangzi.sqs.starter.listener.ApplicationReadyListener;
@@ -17,6 +16,6 @@ import java.lang.annotation.*;
 @Inherited
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({SqsConfig.class, SqsListenerConfigurationSelector.class, ApplicationReadyListener.class, CustomSqsClient.class})
+@Import({SqsConfig.class, SqsListenerConfigurationSelector.class, ApplicationReadyListener.class})
 public @interface EnableSqsListener {
 }
