@@ -77,6 +77,7 @@ public class SqsListenerAnnotationBeanPostProcessor implements
     public void afterSingletonsInstantiated() {
         sqsConfig = configurableListableBeanFactory.getBean(SqsConfig.class);
         SqsEndpointFactory.createBatchByConfig(sqsConfig);
+        if (this.registrars.isEmpty()) return;
         Map<String, Long> registrarsMap = this.registrars.stream().map(each -> each.getListenerEntry().getValue().clientName())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         asyncTaskExecutor = createDefaultTaskExecutor(registrarsMap);
