@@ -34,16 +34,18 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
     private MessageDeletionPolicy deletionPolicy;
     private List<QueueAttributeName> attributeNames;
     private List<String> messageAttributeNames;
+    private int maxNumberOfMessages;
     private AsyncTaskExecutor asyncTaskExecutor;
     private boolean isFifoQueue = false;
     private ReceiveMessageRequest buildRequest;
 
     public MessageListenerContainer(
-            String queueName, List<QueueAttributeName> attributeNames, List<String> messageAttributeNames,
+            String queueName, List<QueueAttributeName> attributeNames, List<String> messageAttributeNames,int maxNumberOfMessages,
             MessageDeletionPolicy deletionPolicy, Method method, Object bean, SqsClient sqsClient, AsyncTaskExecutor asyncTaskExecutor) {
         this.queueName = queueName;
         this.attributeNames = attributeNames;
         this.messageAttributeNames = messageAttributeNames;
+        this.maxNumberOfMessages = (maxNumberOfMessages > 10 || maxNumberOfMessages < 1) ? 10 : maxNumberOfMessages;
         this.deletionPolicy = deletionPolicy;
         this.method = method;
         this.bean = bean;
@@ -55,7 +57,7 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
         queueUrl = resolveDestination(queueName);
         isFifoQueue = checkFifoQueue(queueUrl);
         ReceiveMessageRequest.Builder requestBuilder = ReceiveMessageRequest.builder().queueUrl(queueUrl);
-        requestBuilder.maxNumberOfMessages(Constants.DEFAULT_BATCH_MESSAGE);// 最大10条消息
+        requestBuilder.maxNumberOfMessages(maxNumberOfMessages);// 最大10条消息
         requestBuilder.waitTimeSeconds(Constants.DEFAULT_WAIT_TIME_SECONDS);// 长轮询10秒
         if (attributeNames != null) requestBuilder.attributeNames(attributeNames);
         if (messageAttributeNames != null) requestBuilder.messageAttributeNames(messageAttributeNames);

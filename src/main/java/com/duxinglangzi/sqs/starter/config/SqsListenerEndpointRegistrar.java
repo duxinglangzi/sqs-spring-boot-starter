@@ -57,6 +57,7 @@ public class SqsListenerEndpointRegistrar {
                 environment.resolvePlaceholders(getListenerEntry().getValue().queueUrl()),
                 attributeNameList(getListenerEntry().getValue().attributeNames()),
                 new ArrayList<>(Arrays.asList(getListenerEntry().getValue().messageAttributeNames())),
+                getListenerEntry().getValue().maxNumberOfMessages(),
                 getListenerEntry().getValue().deletionPolicy(),
                 getListenerEntry().getKey(),
                 getBean(),

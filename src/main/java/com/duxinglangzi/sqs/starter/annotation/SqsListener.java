@@ -46,4 +46,9 @@ public @interface SqsListener {
      */
     MessageDeletionPolicy deletionPolicy() default MessageDeletionPolicy.SUCCESS;
 
+    /**
+     * 默认每次拉取10条数据
+     */
+    int maxNumberOfMessages() default 10;
+
 }
