@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -112,6 +113,8 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
                     queueUrl, method.getName(), exc.getLocalizedMessage());
             // 防止删除消息时发生错误,或者拉取消息失败等情况
             exc.printStackTrace();
+            // 增加等待,因网络、队列配置等问题引起的日志死循环打印问题
+            sleep(SLEEP_TIME_MILLI_SECONDS);
         }
     }
 
