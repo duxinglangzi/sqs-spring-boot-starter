@@ -103,8 +103,8 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
                     countDownLatch.await();
                     if (!concurrentHashMap.isEmpty()) deleteBatchMessage(concurrentHashMap);
                 } catch (InterruptedException e) {
-                    logger.error("[MessageListenerContainer_doStart_countDownLatch] 消息消费过程中多线程发生异常, queueUrl:{} ,deletionPolicy:{}",
-                            queueUrl, deletionPolicy.name());
+                    logger.error("[MessageListenerContainer_doStart_countDownLatch] 消息消费过程中多线程发生异常, queueUrl:{} ,deletionPolicy:{} ,errorMessage:{}",
+                            queueUrl, deletionPolicy.name(), e.getLocalizedMessage());
                     Thread.currentThread().interrupt();
                 }
             }

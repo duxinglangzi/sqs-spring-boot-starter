@@ -102,7 +102,8 @@ public class SqsListenerAnnotationBeanPostProcessor implements
         threadPoolTaskExecutor.setThreadNamePrefix("AsyncTaskExecutor_SQS_Listener - ");
         threadPoolTaskExecutor.setCorePoolSize(corePoolSize);
         threadPoolTaskExecutor.setMaxPoolSize(maxPoolSize);
-        threadPoolTaskExecutor.setQueueCapacity(corePoolSize);
+        // ThreadPoolTaskExecutor 和 ThreadPoolExecutor 队列实现有区别
+        threadPoolTaskExecutor.setQueueCapacity(maxPoolSize);
         threadPoolTaskExecutor.afterPropertiesSet();
         return threadPoolTaskExecutor;
     }
