@@ -58,3 +58,7 @@ local.properties
 .mvn/
 mvnw
 mvnw.cmd
+
+
+# mac os x
+.DS_Store
