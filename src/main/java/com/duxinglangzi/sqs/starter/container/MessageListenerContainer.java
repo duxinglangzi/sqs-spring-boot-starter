@@ -89,8 +89,10 @@ public class MessageListenerContainer extends AbstractMessageListenerContainer {
                     switch (deletionPolicy) {
                         case ALWAYS:
                             deleteMessage(message.receiptHandle());
+                            break;
                         case SUCCESS:
                             if (exception == null) deleteMessage(message.receiptHandle());
+                            break;
                     }
                 }
             } else {
